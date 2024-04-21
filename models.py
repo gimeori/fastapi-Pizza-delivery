@@ -1,10 +1,10 @@
 
-from sqlalchemy import Column,Integer,ForeignKey, DateTime, Table
+from sqlalchemy import Column,Integer,ForeignKey,Table, String, ARRAY
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 from sqlalchemy.sql import func
 import enum
 from datetime import datetime
-
+from typing import List
 Base=declarative_base()
 
 order_pizza_association = Table(
@@ -20,11 +20,28 @@ class Pizza(Base):
     id: Mapped[int]=mapped_column(primary_key=True)
     pizzaname:Mapped[str]=mapped_column(unique=True)
     price:Mapped[float]
-    description:Mapped[str]
+    description:Mapped[str | None]=mapped_column(nullable=True)
+    image: Mapped[str]
+    sizes: Mapped[str]=mapped_column(ARRAY(String))
+    rating:Mapped[int]=mapped_column(nullable=True)
+    category_name= Column(String, ForeignKey("category.title"))
+
 
     orders = relationship('Order', secondary=order_pizza_association, back_populates='pizza')
+    category=relationship('Category', back_populates='cat_pizza')
     
+    def __str__(self) -> str:
+        return self.pizzaname
 
+class Category(Base):
+    __tablename__='category'
+    id: Mapped[int]=mapped_column(primary_key=True)
+    title:Mapped[str]=mapped_column(unique=True)
+
+    cat_pizza=relationship('Pizza', back_populates='category')
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class Statuses(enum.Enum):
@@ -40,6 +57,9 @@ class Order(Base):
     order_status :Mapped[Statuses]
 
     pizza = relationship('Pizza', secondary=order_pizza_association, back_populates='orders')
+
+    def __str__(self) -> str:
+        return self.name
 
 
 

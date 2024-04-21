@@ -21,16 +21,13 @@ async def create_order(order: OrderModel):
     session.add(new_order)
     session.commit()
     session.refresh(new_order)
-
     for pizza in pizzas:
         new_order.pizza.append(pizza)
 
     session.commit()
-
     order_info = [{
         "pizzaname": pizza.pizzaname
     } for pizza in new_order.pizza]
-
     response = {
         "order_id": new_order.id,
         "order_status": new_order.order_status,
