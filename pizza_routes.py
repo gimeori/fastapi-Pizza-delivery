@@ -44,6 +44,7 @@ async def update_item(id:int,item:PizzaModel=Depends()):
         item_to_update.description=item.description
         item_to_update.pizzaname=item.pizzaname
         item_to_update.image=path_image
+        item_to_update.pastry=item.pastry
         item_to_update.sizes=item.sizes
         item_to_update.category_name=item.category_name
         session.commit()
@@ -62,6 +63,7 @@ async def create_item(item:PizzaModel= Depends()):
         price=item.price,
         description=item.description,
         image=path_image,
+        pastry=item.pastry,
         sizes=item.sizes,
         category_name=item.category_name,
     )

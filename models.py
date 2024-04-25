@@ -1,9 +1,7 @@
 
-from sqlalchemy import Column,Integer,ForeignKey,Table, String, ARRAY
+from sqlalchemy import Column,Integer,ForeignKey,Table, String, ARRAY, Sequence
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
-from sqlalchemy.sql import func
 import enum
-from datetime import datetime
 from typing import List
 Base=declarative_base()
 
@@ -22,6 +20,7 @@ class Pizza(Base):
     price:Mapped[float]
     description:Mapped[str | None]=mapped_column(nullable=True)
     image: Mapped[str]
+    pastry:Mapped[str]=mapped_column(ARRAY(String))
     sizes: Mapped[str]=mapped_column(ARRAY(String))
     rating:Mapped[int]=mapped_column(nullable=True)
     category_name= Column(String, ForeignKey("category.title"))
@@ -53,7 +52,11 @@ class Statuses(enum.Enum):
 class Order(Base):
     __tablename__ = 'orders'
     id : Mapped[int]=mapped_column(primary_key=True)
-    name:Mapped[datetime]=mapped_column(default=func.now())
+    phone: Mapped[str]=mapped_column(nullable=False)
+    name: Mapped[str]=mapped_column(nullable=False)
+    email:Mapped[str | None]=mapped_column(nullable=True)
+    comment:Mapped[str | None]=mapped_column(nullable=True)
+
     order_status :Mapped[Statuses]
 
     pizza = relationship('Pizza', secondary=order_pizza_association, back_populates='orders')

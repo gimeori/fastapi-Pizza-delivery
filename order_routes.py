@@ -2,7 +2,6 @@ from fastapi import APIRouter,status, HTTPException
 from models import Order,Pizza
 from schemas import OrderModel, OrderStatusModel
 from database import Session, engine
-from fastapi.encoders import jsonable_encoder
 
 order_router=APIRouter(
     prefix="/orders",
@@ -17,7 +16,13 @@ async def create_order(order: OrderModel):
     if len(pizzas) != len(order.pizza):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Одна или несколько пицц не существуют в базе данных")
 
-    new_order = Order(order_status='inprocess')
+    new_order = Order(
+         phone=order.phone,
+         name=order.name,
+         email=order.email,
+         comment=order.comment,
+         order_status='inprocess'
+         )
     session.add(new_order)
     session.commit()
     session.refresh(new_order)
@@ -33,12 +38,12 @@ async def create_order(order: OrderModel):
         "order_status": new_order.order_status,
         "order_info": order_info
     }
-    return jsonable_encoder(response)
+    return response
 
 @order_router.get('/orders')
 async def list_all_orders():
       orders=session.query(Order).all()
-      return jsonable_encoder(orders)
+      return orders
 
 @order_router.get('/orders/{id}')
 async def get_order_by_id(id:int):
@@ -50,12 +55,13 @@ async def get_order_by_id(id:int):
      pizza_info = [{"pizzaname": pizza.pizzaname} for pizza in order.pizza]
      order_info = {
          "id": order.id,
+         "phone":order.phone,
          "name": order.name,
          "order_status": order.order_status,
          "pizza": pizza_info
      }
 
-     return jsonable_encoder(order_info)
+     return order_info
 
 
 @order_router.patch('/order/update/{id}/')
@@ -67,7 +73,7 @@ async def update_order_status(id:int,order:OrderStatusModel):
           "id":order_to_update.id,
           "order_status":order_to_update.order_status
      }
-     return jsonable_encoder(order_to_update)
+     return order_to_update
 
 @order_router.delete('/order/delete/{order_id}/',status_code=status.HTTP_204_NO_CONTENT)
 async def delete_order(id:int):
