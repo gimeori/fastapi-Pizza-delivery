@@ -21,6 +21,7 @@ async def create_order(order: OrderModel):
          name=order.name,
          email=order.email,
          comment=order.comment,
+         address=order.address,
          order_status='inprocess'
          )
     session.add(new_order)

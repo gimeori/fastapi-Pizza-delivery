@@ -8,6 +8,7 @@ class OrderModel(BaseModel):
     name: str
     email:Optional[str|None]= None
     comment:Optional[str|None ]= None
+    address:str
     order_status:str="inprocess"
     pizza:List[str]
     

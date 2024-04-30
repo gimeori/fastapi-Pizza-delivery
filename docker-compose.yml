@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  db: 
+    restart: always
+    image: 'postgres:15'
+    container_name: db_pizza
+    environment: 
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5430:5432
+
+  api: 
+    restart: always
+    build: .
+    env_file:
+      - .env-non-dev
+    command: bash -c 'uvicorn main:app --reload --workers 4 --host 0.0.0.0 --port 8000'
+    ports:
+      - 7171:8000
+    depends_on:
+      - db
+

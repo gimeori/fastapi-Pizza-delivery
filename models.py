@@ -56,6 +56,7 @@ class Order(Base):
     name: Mapped[str]=mapped_column(nullable=False)
     email:Mapped[str | None]=mapped_column(nullable=True)
     comment:Mapped[str | None]=mapped_column(nullable=True)
+    address:Mapped[str]=mapped_column(nullable=False)
 
     order_status :Mapped[Statuses]
 
