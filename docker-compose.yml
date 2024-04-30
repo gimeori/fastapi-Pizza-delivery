@@ -3,22 +3,23 @@ services:
   db:
     image: postgres
     container_name: db_pizza
-    command: -p 1225
-    expose:
-      - 1225
-    env_file:
-      - .env-non-dev
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5433:5432
     
     
     restart: always
     
   app: 
-    build: ./
+    build: .
     env_file:
       - .env-non-dev
     container_name: pizza_app
     ports:
-      - 7775:8000
+      - 8000:8000
     depends_on:
       - db
     restart: always
