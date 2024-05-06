@@ -20,7 +20,7 @@ class Pizza(Base):
     price:Mapped[float]
     description:Mapped[str | None]=mapped_column(nullable=True)
     image: Mapped[str]
-    pastry:Mapped[str]=mapped_column(ARRAY(String))
+    types:Mapped[str]=mapped_column(ARRAY(String))
     sizes: Mapped[str]=mapped_column(ARRAY(String))
     rating:Mapped[int]=mapped_column(nullable=True)
     category_name= Column(String, ForeignKey("category.title"))

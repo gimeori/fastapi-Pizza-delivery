@@ -22,9 +22,7 @@ class PizzaModel:
     pizzaname:str=Form(...)
     price:float=Form(...)
     description:str|None=Form(...)
-    image:UploadFile= File(...)
-    pastry:List[str]=Form(...)
-    sizes:List[str]=Form(...)
+    image:str= Form(...)
     category_name:str=Form(...)
 
 
@@ -33,7 +31,7 @@ class PizzaInfo(BaseModel):
     price:float
     description:str|None
     image:str
-    pastry:List[str]
+    types:List[str]
     sizes:List[str]
     rating:Optional[int]=None
     category_name:str
