@@ -4,8 +4,7 @@ from sqlalchemy import func
 from models import Pizza, Order
 from schemas import PizzaModel, PizzaInfo
 from database import Session, engine
-import os
-from utils.save_image import image_add_origin
+
 
 
 pizza_router=APIRouter(

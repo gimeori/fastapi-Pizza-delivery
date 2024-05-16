@@ -1,5 +1,4 @@
-from fastapi import APIRouter, status, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, status
 from models import Category
 from schemas import CategoryModel
 from database import Session, engine

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from dataclasses import dataclass
-from fastapi import UploadFile, File, Form
+from fastapi import Form
 
 class OrderModel(BaseModel):
     phone: str="79538914495"

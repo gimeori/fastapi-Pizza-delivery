@@ -1,8 +1,6 @@
-
-from sqlalchemy import Column,Integer,ForeignKey,Table, String, ARRAY, Sequence
+from sqlalchemy import Column,Integer,ForeignKey,Table, String, ARRAY
 from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 import enum
-from typing import List
 Base=declarative_base()
 
 order_pizza_association = Table(
