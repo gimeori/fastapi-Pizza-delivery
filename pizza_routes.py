@@ -1,9 +1,10 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, Query, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import func
 from models import Pizza, Order
 from schemas import PizzaModel, PizzaInfo
 from database import Session, engine
+from sqlalchemy import asc, desc
 
 
 
@@ -14,12 +15,27 @@ pizza_router=APIRouter(
 session=Session(bind=engine)
 
 @pizza_router.get('/')
-async def list_all_items():
+async def list_all_items(sort_by: str = Query(None, regex="^(rating|price|pizzaname)$"), 
+    order: str = Query(None, regex="^(asc|desc)$"),):
     try:
-      items=session.query(Pizza).all()
-      return items
+        query = session.query(Pizza)
+        
+        if sort_by:
+            if sort_by not in ['rating', 'price', 'pizzaname']:
+                raise HTTPException(status_code=400, detail="Invalid value")
+            
+            sort_criteria = getattr(Pizza, sort_by)
+            if order == "desc":
+                sort_criteria = desc(sort_criteria)
+            else:
+                sort_criteria = asc(sort_criteria)
+            
+            query = query.order_by(sort_criteria)
+        
+        items = query.all()
+        return items
     except Exception as e:
-                return JSONResponse(status_code=500, content={"message": f"Error: {e}"})
+        return JSONResponse(status_code=500, content={"message": f"Error: {e}"})
 
 @pizza_router.get('/{id}')
 async def get_item_by_id(id:int):

@@ -2,6 +2,7 @@ from fastapi import APIRouter,status, HTTPException
 from models import Order,Pizza
 from schemas import OrderModel, OrderStatusModel
 from database import Session, engine
+from sqlalchemy.sql import func
 
 order_router=APIRouter(
     prefix="/orders",
@@ -29,6 +30,11 @@ async def create_order(order: OrderModel):
     session.refresh(new_order)
     for pizza in pizzas:
         new_order.pizza.append(pizza)
+        
+    session.commit()
+    for pizza in pizzas:
+        rating_count = session.query(func.count(Order.id)).filter(Order.pizza.contains(pizza)).scalar()
+        pizza.rating = rating_count
 
     session.commit()
     order_info = [{
