@@ -23,7 +23,7 @@ async def get_item_by_id(id: int):
     item = session.query(Category).options(selectinload(Category.cat_pizza)).filter(Category.id == id).first()
     if item is None:
         raise HTTPException(status_code=404, detail="Category not found")
-    return item
+    return item.cat_pizza
 
 
 @category_router.post('/', status_code=status.HTTP_201_CREATED)
