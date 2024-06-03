@@ -3,12 +3,7 @@ from sqlalchemy.orm import relationship, declarative_base, Mapped, mapped_column
 import enum
 Base=declarative_base()
 
-order_pizza_association = Table(
-    'order_pizza',
-    Base.metadata,
-    Column('order_id', Integer, ForeignKey('orders.id')),
-    Column('pizza_id', Integer, ForeignKey('pizza.id'))
-)
+
 
 class Pizza(Base):
 
@@ -24,8 +19,8 @@ class Pizza(Base):
     category_name= Column(String, ForeignKey("category.title"))
 
 
-    orders = relationship('Order', secondary=order_pizza_association, back_populates='pizza')
     category=relationship('Category', back_populates='cat_pizza')
+    orders = relationship('OrderPizzaTable', back_populates='pizza')
     
     def __str__(self) -> str:
         return self.pizzaname
@@ -58,8 +53,17 @@ class Order(Base):
 
     order_status :Mapped[Statuses]
 
-    pizza = relationship('Pizza', secondary=order_pizza_association, back_populates='orders')
+    pizzas = relationship('OrderPizzaTable', back_populates='order')
 
     def __str__(self) -> str:
         return self.name
 
+class OrderPizzaTable(Base):
+    __tablename__='order_pizza'
+    order_id = Column(Integer, ForeignKey('orders.id'), primary_key=True)
+    pizza_id = Column(Integer, ForeignKey('pizza.id'), primary_key=True)
+    count = Column(Integer)
+    size = Column(String)
+    type = Column(String)
+    order = relationship(Order, back_populates='pizzas')
+    pizza = relationship(Pizza, back_populates='orders')
