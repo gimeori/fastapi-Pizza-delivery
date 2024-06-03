@@ -13,7 +13,9 @@ session=Session(bind=engine)
 
 @order_router.post('/order', status_code=status.HTTP_201_CREATED)
 async def create_order(order: OrderModel):
-    pizzas = session.query(Pizza).filter(Pizza.pizzaname.in_(order.pizza)).all()
+    pizza_ids = [pizza.id for pizza in order.pizza]
+    pizzas = session.query(Pizza).filter(Pizza.id.in_(pizza_ids)).all()
+
     if len(pizzas) != len(order.pizza):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Одна или несколько пицц не существуют в базе данных")
 
@@ -24,22 +26,30 @@ async def create_order(order: OrderModel):
          comment=order.comment,
          address=order.address,
          order_status='inprocess'
-         )
+    )
     session.add(new_order)
     session.commit()
     session.refresh(new_order)
-    for pizza in pizzas:
-        new_order.pizza.append(pizza)
-        
+
+    for pizza_order in order.pizza:
+        pizza = next((p for p in pizzas if p.id == pizza_order.id), None)
+        if pizza:
+            for _ in range(pizza_order.count):
+                new_order.pizza.append(pizza)
+
     session.commit()
+
     for pizza in pizzas:
         rating_count = session.query(func.count(Order.id)).filter(Order.pizza.contains(pizza)).scalar()
         pizza.rating = rating_count
 
     session.commit()
+
     order_info = [{
-        "pizzaname": pizza.pizzaname
-    } for pizza in new_order.pizza]
+        "pizzaname": pizza_order.pizzaname,
+        "count": pizza_order.count
+    } for pizza_order in order.pizza]
+
     response = {
         "order_id": new_order.id,
         "order_status": new_order.order_status,
@@ -67,8 +77,8 @@ async def get_order_by_id(id:int):
          "order_status": order.order_status,
          "pizza": pizza_info
      }
-
      return order_info
+
 
 
 @order_router.patch('/order/update/{id}/')

@@ -3,20 +3,6 @@ from typing import Optional, List
 from dataclasses import dataclass
 from fastapi import Form
 
-class OrderModel(BaseModel):
-    phone: str="79538914495"
-    name: str
-    email:Optional[str|None]= None
-    comment:Optional[str|None ]= None
-    address:str
-    order_status:str="inprocess"
-    pizza:List[str]
-    
-    
-    class Config:
-        orm_mode=True
-
-
 @dataclass
 class PizzaModel:
     pizzaname:str=Form(...)
@@ -25,6 +11,29 @@ class PizzaModel:
     image:str= Form(...)
     category_name:str=Form(...)
 
+
+class PizzaOrderModel(BaseModel):
+    id: int
+    count: int
+    pizzaname: str
+    image: str
+    price: float
+    size: str
+    type: str
+
+
+
+class OrderModel(BaseModel):
+    phone: str
+    name: str
+    email:Optional[str|None]= None
+    comment:Optional[str|None ]= None
+    address:str
+    pizza: List[PizzaOrderModel]
+    
+    
+    class Config:
+        orm_mode=True
 
 class PizzaInfo(BaseModel):
     pizzaname:str

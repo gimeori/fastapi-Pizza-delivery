@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, Depends, Query, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import func
-from models import Pizza, Order
+from models import Pizza
 from schemas import PizzaModel, PizzaInfo
 from database import Session, engine
 from sqlalchemy import asc, desc
@@ -85,16 +85,3 @@ async def delete_item(id:int):
         return item_to_delete
      except Exception as e:
         return JSONResponse(status_code=500, content={"message": f"Error: {e}"})
-
-
-@pizza_router.patch('/{id}/')
-async def update_rating_status(id: int):
-    pizza_to_update = session.query(Pizza).filter(Pizza.id == id).first()
-    if not pizza_to_update:
-        return JSONResponse(status_code=404, content={"message": "Item not found"})
-
-    rating_count = session.query(func.count(Order.id)).filter(Order.pizza.contains(pizza_to_update)).scalar()
-    pizza_to_update.rating = rating_count
-    session.commit()
-
-    return pizza_to_update

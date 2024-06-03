@@ -63,7 +63,3 @@ class Order(Base):
     def __str__(self) -> str:
         return self.name
 
-
-
-
-
